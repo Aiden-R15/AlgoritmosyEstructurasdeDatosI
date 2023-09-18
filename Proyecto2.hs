@@ -21,6 +21,8 @@ cifradoAmericano Sol = 'G'
 cifradoAmericano La = 'A'
 cifradoAmericano Si = 'B'
 
+---------Ejercicio 3---------
+
 minimoElemento :: (Ord a, Show a) => [a] -> a
 minimoElemento [x] = x
 minimoElemento (x:xs) = min x (minimoElemento xs)
@@ -58,15 +60,15 @@ contarFutb ((Futbolista Mediocampo n p a):xs) Mediocampo = 1 + contarFutb xs Med
 contarFutb ((Futbolista Delantera n p a):xs) Delantera = 1 + contarFutb xs Delantera
 contarFutb (x:xs) z = contarFutb xs z
 
-esFutb2 :: Zona -> Deportista -> Bool
-esFutb2 Arco (Futbolista Arco n p a) = True
-esFutb2 Defensa (Futbolista Defensa n p a) = True
-esFutb2 Mediocampo (Futbolista Mediocampo n p a) = True
-esFutb2 Delantera (Futbolista Delantera n p a) = True
-esFutb2 x _ = False
+esFutb :: Zona -> Deportista -> Bool
+esFutb Arco (Futbolista Arco n p a) = True
+esFutb Defensa (Futbolista Defensa n p a) = True
+esFutb Mediocampo (Futbolista Mediocampo n p a) = True
+esFutb Delantera (Futbolista Delantera n p a) = True
+esFutb x _ = False
 
 contarFutb2 :: [Deportista] -> Zona -> Int
-contarFutb2 xs zona = length (filter (esFutb2 zona) xs)
+contarFutb2 xs zona = length (filter (esFutb zona) xs)
 
 ---------Ejercicio 5---------
 
@@ -128,6 +130,36 @@ busca (Encolada d c) z = busca c z
 ---------Ejercicio 8---------
 
 data ListaAsoc a b = Vacia | Nodo a b (ListaAsoc a b)
+
 type Diccionario = ListaAsoc String String
 type Padron = ListaAsoc Int String
+
+la_long :: ListaAsoc a b -> Int
+la_long Vacia = 0
+la_long (Nodo a b (list)) = 1 + la_long list
+
+la_concat :: ListaAsoc a b -> ListaAsoc a b -> ListaAsoc a b
+la_concat Vacia list = list
+la_concat (Nodo a b (lista)) list = (Nodo a b (la_concat list lista))
+
+la_agregar :: Eq a => ListaAsoc a b -> a -> b -> ListaAsoc a b
+la_agregar Vacia a1 b1 = (Nodo a1 b1 Vacia)
+la_agregar (Nodo a b l) a1 b1 =
+    case a of 
+        a | a == a1 -> (Nodo a b1 l)
+        _ -> (Nodo a b (la_agregar l a1 b1))
+
+la_pares :: ListaAsoc a b -> [(a, b)]
+la_pares Vacia = []
+la_pares (Nodo a b l) = (a, b):la_pares l
+
+la_busca :: Eq a => ListaAsoc a b -> a -> Maybe b
+la_busca Vacia numero = Nothing
+la_busca (Nodo a b lista) numero |a == numero = Just b
+                                |otherwise = la_busca lista numero 
+
+la_borrar :: Eq a => a -> ListaAsoc a b -> ListaAsoc a b 
+la_borrar clave Vacia = Vacia
+la_borrar clave (Nodo b c l)    | b == clave = la_borrar clave l
+                                | otherwise = (Nodo b c (la_borrar clave l))
 
